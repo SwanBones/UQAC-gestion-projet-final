@@ -3,9 +3,12 @@ import logo from './logo.svg';
 import './App.css';
 import { Breadcrumb, Button, Layout, Menu, MenuProps } from 'antd';
 import {
+  AuditOutlined,
   DesktopOutlined,
   FileOutlined,
+  HomeOutlined,
   PieChartOutlined,
+  SnippetsOutlined,
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
@@ -26,15 +29,13 @@ function getItem(
   } as MenuItem;
 }
 const items: MenuItem[] = [
-  getItem('Option 1', '1', <PieChartOutlined />),
-  getItem('Option 2', '2', <DesktopOutlined />),
-  getItem('User', 'sub1', <UserOutlined />, [
-    getItem('Tom', '3'),
-    getItem('Bill', '4'),
-    getItem('Alex', '5'),
+  getItem('Home', '1', <HomeOutlined />),
+  getItem("Listes d'inspections", 'sub1', <AuditOutlined />, [
+    getItem('Construction Hopital', '3'),
+    getItem('Rénovation Bibliotheque', '4'),
+    getItem('Construction Zoo', '5'),
   ]),
-  getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
-  getItem('Files', '9', <FileOutlined />),
+
 ];
 
 function App() {
@@ -45,7 +46,8 @@ function App() {
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
+      <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} width={300}>
+      <h1 style={{color:'white',padding:10,paddingLeft:30}} ><SnippetsOutlined />Heratech InspectBTP</h1>
         <div className="demo-logo-vertical" />
         <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
