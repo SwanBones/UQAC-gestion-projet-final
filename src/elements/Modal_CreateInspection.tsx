@@ -73,24 +73,29 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 		});
 
 	const handleSubmit = () => {
-		const isValid = !form.getFieldsError().some((error) => {
-			return error.errors.length;
-		});
+		// var isValid = true;
+		form
+			.validateFields()
+			.then((data) => {
+				console.log(data);
+				const result: Inspection = form.getFieldsValue();
+				result.date = dayjs().format();
+				result.id = generateUUID();
+				result.status = "signaled";
+				//console.log(items);
+				const newDataSource = [result, ...items[Number(page[0])].dataSource];
+				items[Number(page[0])].dataSource = newDataSource;
+				setItems(items);
+				form.resetFields();
+				handleOk();
 
-		if (isValid) {
-			const result: Inspection = form.getFieldsValue();
-			result.date = dayjs().format();
-			result.id = generateUUID();
-			result.status = "signaled";
-			//console.log(items);
-			const newDataSource = [result, ...items[Number(page[0])].dataSource];
-			items[Number(page[0])].dataSource = newDataSource;
-			setItems(items);
-			form.resetFields();
-			handleOk();
-
-			setFileList([]);
-		}
+				setFileList([]);
+				// const isValid = !e.errorFields.some((error: any) => {
+				// 	return error.errors.length;
+				// });
+			})
+			.catch((e) => {});
+		// constif (isValid) {
 	};
 	const handleCancel = () => {
 		form.resetFields();
@@ -164,6 +169,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 					label="Priorité"
 					name="priority"
 					rules={[{ required: true, message: "Veuillez ajouter une date" }]}
+					initialValue={"3"}
 				>
 					<Select>
 						<Select.Option value="1">Urgente</Select.Option>

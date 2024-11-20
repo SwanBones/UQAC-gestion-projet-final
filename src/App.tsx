@@ -39,6 +39,7 @@ function getItem(
 }
 
 function App() {
+	const [popupOpen, setPopupOpen] = useState(false);
 	const [collapsed, setCollapsed] = useState(false);
 	const [page, setPage] = useState<string[]>(["home"]);
 	const [isHome, setIsHome] = useState(true);
@@ -85,12 +86,14 @@ function App() {
 	const onAddListConfirm = () => {
 		setItems([...items, { name: newListName, dataSource: [] }]);
 		setPage([items.length.toString(), "inspection"]);
+		setPopupOpen(false);
 	};
 	// const {
 	//   token: { colorBgContainer, borderRadiusLG },
 	// } = theme.useToken();
 	const newListForm = (
 		<Input
+			onPressEnter={onAddListConfirm}
 			value={newListName}
 			onChange={(e) => {
 				setNewListName(e.target.value);
@@ -103,7 +106,7 @@ function App() {
 				collapsible
 				collapsed={collapsed}
 				onCollapse={(value) => setCollapsed(value)}
-				width={300}
+				width={330}
 			>
 				<h1 style={{ color: "white", padding: 10, paddingLeft: 30 }}>
 					<SnippetsOutlined style={{ marginRight: "1em" }} />
@@ -121,11 +124,16 @@ function App() {
 					items={menuItems}
 				/>
 				<Popconfirm
+					open={popupOpen}
+					onCancel={() => {
+						setPopupOpen(false);
+					}}
 					placement="right"
 					title={"Nom de la liste"}
 					description={newListForm}
 					onOpenChange={() => {
 						setNewListName("");
+						setPopupOpen(false);
 					}}
 					onConfirm={onAddListConfirm}
 					okText="Ajouter"
@@ -133,6 +141,9 @@ function App() {
 					icon={false}
 				>
 					<Button
+						onClick={() => {
+							setPopupOpen(true);
+						}}
 						style={{
 							color: "white",
 							backgroundColor: "#001529",
@@ -158,7 +169,7 @@ function App() {
 							<Breadcrumb.Item>{items[Number(page[0])]?.name}</Breadcrumb.Item>
 						)}
 					</Breadcrumb>
-					<h1>{isHome ? "Accueil" : items[Number(page[0])]?.name}</h1>
+					<h1>{isHome ? "Bienvenue!" : items[Number(page[0])]?.name}</h1>
 					{/* <Button
 						onClick={() => {
 							console.log();

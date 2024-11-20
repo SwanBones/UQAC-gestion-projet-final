@@ -112,7 +112,19 @@ const columns = [
 const InspectionList = (props: InspectionListProps) => {
 	const { dataSource, tableSize } = props;
 	return (
-		<Table size={tableSize} columns={columns} dataSource={dataSource}></Table>
+		<Table
+			size={tableSize}
+			columns={columns}
+			dataSource={dataSource}
+			onRow={(record, rowIndex) => {
+				return {
+					onClick: (event) => {
+						console.log(record);
+					},
+				};
+			}}
+			rowClassName="table-row"
+		></Table>
 	);
 };
 

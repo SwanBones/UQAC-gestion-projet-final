@@ -1,9 +1,17 @@
 .App {
 	text-align: center;
 }
+.paragraph {
+	font-size: 17px;
+	text-indent: 50px;
+	line-height: 1.6;
+}
 #add-list:hover {
 	background-color: #1677ff;
 	border-radius: 10px;
+	cursor: pointer;
+}
+.table-row {
 	cursor: pointer;
 }
 .App-header {

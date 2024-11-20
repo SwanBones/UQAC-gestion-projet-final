@@ -63,7 +63,7 @@ const InspectionPage = (props: InspectionPageProps) => {
 			/>
 			<InspectionList
 				tableSize={tableSize as SizeType}
-				dataSource={isHome ? [] : items[Number(page[0])].dataSource}
+				dataSource={isHome ? [] : items[Number(page[0])]?.dataSource}
 			/>
 		</div>
 	);
