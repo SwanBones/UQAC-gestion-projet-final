@@ -29,17 +29,18 @@ function getItem(
   } as MenuItem;
 }
 const items: MenuItem[] = [
-  getItem('Home', '1', <HomeOutlined />),
-  getItem("Listes d'inspections", 'sub1', <AuditOutlined />, [
-    getItem('Construction Hopital', '3'),
-    getItem('Rénovation Bibliotheque', '4'),
-    getItem('Construction Zoo', '5'),
+  getItem('Home', 'home', <HomeOutlined />),
+  getItem("Listes d'inspections", 'lists', <AuditOutlined />, [
+    getItem('Construction Hopital', 'hospital'),
+    getItem('Rénovation Bibliotheque', 'library'),
+    getItem('Construction Zoo', 'zoo'),
   ]),
 
 ];
 
 function App() {
   const [collapsed, setCollapsed] = useState(false);
+  const [page, setPage] = useState<string[]>([]);
   // const {
   //   token: { colorBgContainer, borderRadiusLG },
   // } = theme.useToken();
@@ -47,27 +48,30 @@ function App() {
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} width={300}>
-      <h1 style={{color:'white',padding:10,paddingLeft:30}} ><SnippetsOutlined />Heratech InspectBTP</h1>
+      <h1 style={{color:'white',padding:10,paddingLeft:30}} ><SnippetsOutlined style={{marginRight:'1em'}}/>{!collapsed && "Heratech InspectBTP"}</h1>
         <div className="demo-logo-vertical" />
-        <Menu theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu selectedKeys={page} onClick={(info)=>{setPage(info.keyPath)}} theme="dark" defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
       <Layout>
         <Header style={{ padding: 0, background: "#001529" }} />
         <Content style={{ margin: '0 16px' }}>
           <Breadcrumb style={{ margin: '16px 0' }}>
-            <Breadcrumb.Item>User</Breadcrumb.Item>
-            <Breadcrumb.Item>Bill</Breadcrumb.Item>
+            
+            <Breadcrumb.Item>Inspections</Breadcrumb.Item>
+            <Breadcrumb.Item>{page[0]}</Breadcrumb.Item>
           </Breadcrumb>
           <div
             style={{
               color:"white",
               padding: 24,
               minHeight: 360,
-              background: "#001529",
+              background: "#E0E0E0",
               borderRadius: 20,
             }}
           >
-            Bill is a cat.
+           
+           
+
           </div>
         </Content>
         <Footer style={{ textAlign: 'center' }}>
