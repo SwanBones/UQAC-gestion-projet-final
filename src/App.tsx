@@ -16,13 +16,13 @@ import {
 	SnippetsOutlined,
 } from "@ant-design/icons";
 // import { writeFileSync } from "fs";
-
+import dataSource from "./utils/dataSources";
 import InspectionList from "./elements/Table_InspectionList";
 import InspectionPage from "./elements/Page_InspectionPage";
 import { BTPData } from "./types";
 import HomePage from "./elements/Page_Home";
 const { Header, Content, Footer, Sider } = Layout;
-
+const { data_hospital, data_library, data_zoo } = dataSource;
 type MenuItem = Required<MenuProps>["items"][number];
 function getItem(
 	label: React.ReactNode,
@@ -43,27 +43,19 @@ function App() {
 	const [page, setPage] = useState<string[]>(["home"]);
 	const [isHome, setIsHome] = useState(true);
 	const [newListName, setNewListName] = useState<string>("");
+
 	const [items, setItems] = useState<BTPData[]>([
 		{
 			name: "Construction Hopital",
-			dataSource: [
-				{
-					title: "e",
-					date: "e",
-					priority: "e",
-					description: "e",
-					status: "e",
-					id: "e",
-				},
-			],
+			dataSource: data_hospital,
 		},
 		{
 			name: "Rénovation Bibliotheque",
-			dataSource: [],
+			dataSource: data_library,
 		},
 		{
-			name: "Construction Hôpital",
-			dataSource: [],
+			name: "Construction Zoo",
+			dataSource: data_zoo,
 		},
 	]);
 	useEffect(() => {
@@ -92,6 +84,7 @@ function App() {
 	}, [items]);
 	const onAddListConfirm = () => {
 		setItems([...items, { name: newListName, dataSource: [] }]);
+		setPage([items.length.toString(), "inspection"]);
 	};
 	// const {
 	//   token: { colorBgContainer, borderRadiusLG },
@@ -149,8 +142,8 @@ function App() {
 						}}
 						id="add-list"
 					>
-						<PlusOutlined style={{ marginRight: "10px" }} />
-						Ajouter Liste
+						<PlusOutlined />
+						{!collapsed && <p style={{ marginLeft: "10px" }}>Ajouter Liste</p>}
 					</Button>
 				</Popconfirm>
 			</Sider>
@@ -185,7 +178,12 @@ function App() {
 						{isHome ? (
 							<HomePage />
 						) : (
-							<InspectionPage items={items} setItems={setItems} page={page} />
+							<InspectionPage
+								isHome={isHome}
+								items={items}
+								setItems={setItems}
+								page={page}
+							/>
 						)}
 					</div>
 				</Content>

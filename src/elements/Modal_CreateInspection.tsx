@@ -19,20 +19,19 @@ import { PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import TextArea from "antd/es/input/TextArea";
 import { useForm } from "antd/es/form/Form";
+import { BTPData, Inspection } from "../types";
+import dayjs from "dayjs";
+import generateUUID from "../utils/uuidGenerator";
 
 type CreateInspectionModalProps = {
 	isModalOpen: boolean;
+	page: string[];
 	handleOk: () => void;
 	handleCancel: () => void;
+	items: BTPData[];
+	setItems: React.Dispatch<React.SetStateAction<BTPData[]>>;
 };
-type FieldType = {
-	title: string;
-	date: string;
-	priority: string;
-	description: string;
-	status: string;
-	id: string;
-};
+
 const normFile = (e: any) => {
 	if (Array.isArray(e)) {
 		return e;
@@ -41,19 +40,24 @@ const normFile = (e: any) => {
 };
 
 const CreateInspectionModal = (props: CreateInspectionModalProps) => {
-	const { isModalOpen, handleOk, handleCancel: onCancel } = props;
-	const { RangePicker } = DatePicker;
-	const [file, setFile] = useState<UploadFile<any> | null>(null);
+	const {
+		isModalOpen,
+		page,
+		handleOk,
+		handleCancel: onCancel,
+		setItems,
+		items,
+	} = props;
+	// const [file, setFile] = useState<UploadFile<any> | null>(null);
 	const [form] = useForm();
-	const [isValid, SetIsValid] = useState(false);
-	const [previewOpen, setPreviewOpen] = useState(false);
+	// const [previewOpen, setPreviewOpen] = useState(false);
 	const [previewImage, setPreviewImage] = useState("");
 	const [fileList, setFileList] = useState<UploadFile[]>([]);
-	const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
+	const onFinish: FormProps<Inspection>["onFinish"] = (values) => {
 		console.log("Success:", values);
 	};
 
-	const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (
+	const onFinishFailed: FormProps<Inspection>["onFinishFailed"] = (
 		errorInfo
 	) => {
 		console.log("Failed:", errorInfo);
@@ -74,8 +78,17 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 		});
 
 		if (isValid) {
-			handleOk();
+			const result: Inspection = form.getFieldsValue();
+			result.date = dayjs().format();
+			result.id = generateUUID();
+			result.status = "signaled";
+			//console.log(items);
+			const newDataSource = [result, ...items[Number(page[0])].dataSource];
+			items[Number(page[0])].dataSource = newDataSource;
+			setItems(items);
 			form.resetFields();
+			handleOk();
+
 			setFileList([]);
 		}
 	};
@@ -90,7 +103,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 		}
 
 		setPreviewImage(file.url || (file.preview as string));
-		setPreviewOpen(true);
+		//setPreviewOpen(true);
 	};
 	const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
 		setFileList(newFileList);
@@ -134,7 +147,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 				onFinishFailed={onFinishFailed}
 				autoComplete="off"
 			>
-				<Form.Item<FieldType>
+				<Form.Item<Inspection>
 					label="Titre"
 					name="title"
 					rules={[
@@ -147,7 +160,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 					<Input />
 				</Form.Item>
 
-				<Form.Item<FieldType>
+				<Form.Item<Inspection>
 					label="Priorité"
 					name="priority"
 					rules={[{ required: true, message: "Veuillez ajouter une date" }]}
@@ -159,7 +172,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 						<Select.Option value="4">Basse</Select.Option>
 					</Select>
 				</Form.Item>
-				<Form.Item<FieldType>
+				<Form.Item<Inspection>
 					label="Description"
 					name="description"
 					rules={[
