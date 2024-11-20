@@ -1,3 +1,7 @@
+# Comment lancer le projet:
+`npm start` dans le terminal
+n'oublie pas de `npm install` juste avant de commencer à coder
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
