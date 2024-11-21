@@ -3,10 +3,17 @@ import { Inspection } from "../types";
 import { render } from "@testing-library/react";
 import dayjs from "dayjs";
 import { SizeType } from "antd/es/config-provider/SizeContext";
+import { SetStateAction } from "react";
 
 type InspectionListProps = {
 	tableSize: SizeType;
 	dataSource: Inspection[];
+	setUpdateModal: React.Dispatch<
+		SetStateAction<{
+			isOpen: boolean;
+			inspection: Inspection | null;
+		}>
+	>;
 };
 const status2Color = (status: string) => {
 	var res;
@@ -110,7 +117,7 @@ const columns = [
 ];
 
 const InspectionList = (props: InspectionListProps) => {
-	const { dataSource, tableSize } = props;
+	const { setUpdateModal, dataSource, tableSize } = props;
 	return (
 		<Table
 			size={tableSize}
@@ -119,7 +126,7 @@ const InspectionList = (props: InspectionListProps) => {
 			onRow={(record, rowIndex) => {
 				return {
 					onClick: (event) => {
-						console.log(record);
+						setUpdateModal({ isOpen: true, inspection: record });
 					},
 				};
 			}}

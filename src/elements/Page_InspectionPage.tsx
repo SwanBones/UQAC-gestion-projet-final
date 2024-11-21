@@ -6,10 +6,11 @@ import {
 	PlusOutlined,
 	UpSquareOutlined,
 } from "@ant-design/icons";
-import { useState } from "react";
+import { SetStateAction, useState } from "react";
 import CreateInspectionModal from "./Modal_CreateInspection";
-import { BTPData } from "../types";
+import { BTPData, Inspection } from "../types";
 import { SizeType } from "antd/es/config-provider/SizeContext";
+import UpdateInspectionModal from "./Modal_UpdateInspection";
 
 type InspectionPageProps = {
 	items: BTPData[];
@@ -21,7 +22,15 @@ type InspectionPageProps = {
 const InspectionPage = (props: InspectionPageProps) => {
 	const { items, setItems, page, isHome } = props;
 	const [tableSize, setTableSize] = useState("large");
-	const [modalIsOpen, setModalIsOpen] = useState(false);
+	const [createModalIsOpen, setCreateModalIsOpen] = useState(false);
+	const [updateModal, setUpdateModal] = useState<{
+		isOpen: boolean;
+		inspection: Inspection | null;
+	}>({
+		isOpen: false,
+		inspection: null,
+	});
+
 	return (
 		<div>
 			<Flex justify="space-between">
@@ -29,7 +38,7 @@ const InspectionPage = (props: InspectionPageProps) => {
 					type="primary"
 					style={{ marginBottom: "1em" }}
 					onClick={() => {
-						setModalIsOpen(true);
+						setCreateModalIsOpen(true);
 					}}
 				>
 					<PlusOutlined /> Ajouter Inspection
@@ -51,17 +60,30 @@ const InspectionPage = (props: InspectionPageProps) => {
 			</Flex>
 			<CreateInspectionModal
 				page={page}
-				isModalOpen={modalIsOpen}
+				isModalOpen={createModalIsOpen}
 				handleOk={function (): void {
-					setModalIsOpen(false);
+					setCreateModalIsOpen(false);
 				}}
 				handleCancel={function (): void {
-					setModalIsOpen(false);
+					setCreateModalIsOpen(false);
+				}}
+				items={items}
+				setItems={setItems}
+			/>
+			<UpdateInspectionModal
+				modal={updateModal}
+				page={page}
+				handleOk={function (): void {
+					setUpdateModal({ isOpen: false, inspection: null });
+				}}
+				handleCancel={function (): void {
+					setUpdateModal({ isOpen: false, inspection: null });
 				}}
 				items={items}
 				setItems={setItems}
 			/>
 			<InspectionList
+				setUpdateModal={setUpdateModal}
 				tableSize={tableSize as SizeType}
 				dataSource={isHome ? [] : items[Number(page[0])]?.dataSource}
 			/>

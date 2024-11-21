@@ -23,13 +23,16 @@ import { BTPData, Inspection } from "../types";
 import dayjs from "dayjs";
 import generateUUID from "../utils/uuidGenerator";
 
-type CreateInspectionModalProps = {
-	isModalOpen: boolean;
+type UpdateInspectionModalProps = {
 	page: string[];
 	handleOk: () => void;
 	handleCancel: () => void;
 	items: BTPData[];
 	setItems: React.Dispatch<React.SetStateAction<BTPData[]>>;
+	modal: {
+		isOpen: boolean;
+		inspection: Inspection | null;
+	};
 };
 
 const normFile = (e: any) => {
@@ -39,14 +42,14 @@ const normFile = (e: any) => {
 	return e?.fileList;
 };
 
-const CreateInspectionModal = (props: CreateInspectionModalProps) => {
+const UpdateInspectionModal = (props: UpdateInspectionModalProps) => {
 	const {
-		isModalOpen,
 		page,
 		handleOk,
 		handleCancel: onCancel,
 		setItems,
 		items,
+		modal,
 	} = props;
 	// const [file, setFile] = useState<UploadFile<any> | null>(null);
 	const [form] = useForm();
@@ -56,6 +59,15 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 	const onFinish: FormProps<Inspection>["onFinish"] = (values) => {
 		console.log("Success:", values);
 	};
+	useEffect(() => {
+		if (modal.inspection != null) {
+			form.setFieldValue("title", modal.inspection.title);
+			form.setFieldValue("priority", modal.inspection.priority);
+			form.setFieldValue("description", modal.inspection.description);
+			form.setFieldValue("date", dayjs(modal.inspection.date));
+			form.setFieldValue("status", modal.inspection.status);
+		}
+	}, [modal]);
 
 	const onFinishFailed: FormProps<Inspection>["onFinishFailed"] = (
 		errorInfo
@@ -79,20 +91,17 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 			.then((data) => {
 				console.log(data);
 				const result: Inspection = form.getFieldsValue();
-				result.date = dayjs().format();
-				result.id = generateUUID();
-				result.status = "signaled";
 				//console.log(items);
-				const newDataSource = [result, ...items[Number(page[0])].dataSource];
-				items[Number(page[0])].dataSource = newDataSource;
+				result.id = modal.inspection!.id;
+				items[Number(page[0])].dataSource = items[
+					Number(page[0])
+				].dataSource.map((inspection) => {
+					return inspection.id == result.id ? result : inspection;
+				});
 				setItems(items);
 				form.resetFields();
 				handleOk();
-
 				setFileList([]);
-				// const isValid = !e.errorFields.some((error: any) => {
-				// 	return error.errors.length;
-				// });
 			})
 			.catch((e) => {});
 		// constif (isValid) {
@@ -121,13 +130,13 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 	);
 	return (
 		<Modal
-			title="Ajouter une inspection"
-			open={isModalOpen}
+			title="Mettre à jour une inspection"
+			open={modal.isOpen}
 			// onOk={handleSubmit}
 			// okButtonProps={{ disabled: isValid }}
 			onCancel={handleCancel}
 			footer={[
-				<Button onClick={handleCancel}>Cancel</Button>,
+				<Button onClick={handleCancel}>Annuler</Button>,
 				<Button
 					type="primary"
 					form="myForm"
@@ -135,7 +144,7 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 					htmlType="submit"
 					onClick={handleSubmit}
 				>
-					Submit
+					Soumettre
 				</Button>,
 			]}
 			width={700}
@@ -164,6 +173,18 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 				>
 					<Input />
 				</Form.Item>
+				<Form.Item<Inspection>
+					label="Date"
+					name="date"
+					rules={[
+						{
+							required: true,
+							message: "Veuillez ajouter une date",
+						},
+					]}
+				>
+					<DatePicker format={"DD/MM/YYYY"} />
+				</Form.Item>
 
 				<Form.Item<Inspection>
 					label="Priorité"
@@ -187,29 +208,23 @@ const CreateInspectionModal = (props: CreateInspectionModalProps) => {
 				>
 					<TextArea rows={4} />
 				</Form.Item>
-				{/* <Form.Item
-					label="Image"
-					valuePropName="fileList"
-					getValueFromEvent={normFile}
+				<Form.Item<Inspection>
+					label="Statut"
+					name="status"
+					rules={[{ required: true, message: "Veuillez ajouter le statut" }]}
+					initialValue={"signaled"}
 				>
-					<Upload
-						//action="google.com"
-						accept=".png,.jpg,.jpeg"
-						beforeUpload={() => false}
-						action={undefined}
-						listType="picture-card"
-						fileList={fileList}
-						onPreview={handlePreview}
-						onChange={handleChange}
-					>
-						{fileList.length >= 1 ? null : uploadButton}
-					</Upload>
-					{previewImage && <></>}
-				</Form.Item> */}
+					<Select>
+						<Select.Option value="signaled">Signalé</Select.Option>
+						<Select.Option value="working">En cours</Select.Option>
+						<Select.Option value="done">Fini</Select.Option>
+						<Select.Option value="refused">Refusé</Select.Option>
+					</Select>
+				</Form.Item>
 			</Form>
 			{/* </Flex> */}
 		</Modal>
 	);
 };
 
-export default CreateInspectionModal;
+export default UpdateInspectionModal;
